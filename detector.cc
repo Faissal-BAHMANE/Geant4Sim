@@ -1,35 +1,60 @@
 #include "detector.hh"
 
-MySensitiveDetector::MySensitiveDetector(G4String name) : G4VSensitiveDetector(name){}
+MySensitiveDetector::MySensitiveDetector(const G4String& name,
+                                         const G4String& hitsCollectionName) : G4VSensitiveDetector(name)
+{
+  collectionName.insert(hitsCollectionName);
+}
+
 MySensitiveDetector::~MySensitiveDetector(){}
 
-G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROHist){
-  // G4Track *track = aStep->GetTrack();
-  // track->SetTrackStatus(fStopAndKill);
+void MySensitiveDetector::Initialize(G4HCofThisEvent* hce)
+{
+  // Create hits collection
 
-  G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
+  fHitsCollection = new myHitsCollection(SensitiveDetectorName, collectionName[0]);
 
-  G4ThreeVector postPosPhoton = postStepPoint->GetPosition();
+  // Add this collection in hce
 
-  G4double postEnergy = postStepPoint->GetKineticEnergy();
-  G4double totalEnergy = postStepPoint->GetTotalEnergy();
+  // G4int hcID
+  //   = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+  // hce->AddHitsCollection( hcID, fHitsCollection );
+}
 
-  G4cout<< "Photon position: " << postPosPhoton  << G4endl;
+G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory*)
+{
+  G4double edep = aStep->GetTotalEnergyDeposit();
 
-  const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
-  G4int copyNo = touchable->GetCopyNumber();
-  G4VPhysicalVolume *physVol = touchable->GetVolume();
-  G4ThreeVector posDetector = physVol->GetTranslation();
+  if (edep==0.) return false;
 
-  G4cout << "Detector position: " << posDetector << G4endl;
+  myHit* newHit = new myHit();
 
-  G4int evt = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-  G4AnalysisManager *man = G4AnalysisManager::Instance();
-  man->FillNtupleIColumn(0, evt);
-  man->FillNtupleDColumn(1, posDetector[0]);
-  man->FillNtupleDColumn(2, posDetector[1]);
-  man->FillNtupleDColumn(3, posDetector[2]);
-  man->FillNtupleDColumn(4, postEnergy);
-  man->AddNtupleRow(0);
-  return 0;
+  newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
+  newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle() ->GetCopyNumber());
+  newHit->SetEdep(edep);
+  newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
+
+  // fHitsCollection->insert(newHit);
+
+  newHit->Print();
+  return true;
+  // G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
+
+  // G4ThreeVector postPosPhoton = postStepPoint->GetPosition();
+
+  // G4double postEnergy = postStepPoint->GetKineticEnergy();
+  // // G4double totalEnergy = postStepPoint->GetTotalEnergy();
+
+  // G4cout<< "Photon position: " << postPosPhoton  << G4endl;
+  // G4cout<< "Photon energy: " << postEnergy  << G4endl;
+  // return 0;
+}
+
+void MySensitiveDetector::EndOfEvent(G4HCofThisEvent*)
+{
+  // G4int nofHits = fHitsCollection->entries();
+  // G4cout << G4endl
+  //        << "-------->Hits Collection: in this event they are " << nofHits
+  //        << " hits in the tracker chambers: " << G4endl;
+  // for ( G4int i=0; i<nofHits; i++ ) (*fHitsCollection)[i]->Print();
 }

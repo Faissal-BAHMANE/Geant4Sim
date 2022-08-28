@@ -3,7 +3,6 @@
 
 MyEventAction::MyEventAction(MyRunAction*)
 {
-  fEnergyDeposit=0.;
 }
 
 MyEventAction::~MyEventAction(){}
@@ -11,14 +10,27 @@ MyEventAction::~MyEventAction(){}
 
 void MyEventAction::BeginOfEventAction(const G4Event*)
 {
-  fEnergyDeposit = 0.;
 }
 
-void MyEventAction::EndOfEventAction(const G4Event*)
+void MyEventAction::EndOfEventAction(const G4Event* event)
 {
-  G4cout << "Energy Deposition: "  << G4BestUnit(fEnergyDeposit, "Energy") << G4endl;
+  // get number of stored trajectories
 
-  G4AnalysisManager *man = G4AnalysisManager::Instance();
-  man->FillNtupleDColumn(1, 0, fEnergyDeposit);
-  man->AddNtupleRow(1);
+  G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();
+  G4int n_trajectories = 0;
+  if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
+
+  // periodic printing
+
+  G4int eventID = event->GetEventID();
+  G4cout << ">>> Event: " << eventID  << G4endl;
+  if ( trajectoryContainer ) {
+    G4cout << "    " << n_trajectories
+           << " trajectories stored in this event." << G4endl;
+  }
+
+  // G4VHitsCollection* hc = event->GetHCofThisEvent()->GetHC(0);
+  // G4cout << "    "
+  //        << hc->GetSize() << " hits stored in this event" << G4endl;
+
 }
