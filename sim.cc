@@ -51,8 +51,5 @@ int main(int argc, char** argv)
     G4String filename = argv[1];
     UImanager->ApplyCommand(command+filename);
   }
-
-  G4cout << "Hello, World!\n";
-  G4cout << "Hello, World!\n";
 	return 0;
 }

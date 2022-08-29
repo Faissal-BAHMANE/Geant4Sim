@@ -23,18 +23,7 @@ G4VPhysicalVolume* MyDetectorConstruction::Construct()
 
   H2O->AddElement(elH, 2);
   H2O->AddElement(elO, 1);
-
-  G4cout << "H2O is " << H2O << G4endl;
-
-  // Define the WaterBox
-  // G4Box *solidWaterBox = new G4Box("waterBox", 0.4*m, 0.4*m, 0.1*m);
-  // G4LogicalVolume *logicWaterBox = new G4LogicalVolume(solidWaterBox, H2O, "logicWaterBox");
-
-  // G4VPhysicalVolume * physWaterBox = new G4PVPlacement(0,
-  //                                                      G4ThreeVector(0., 0., 0.2*m),
-  //                                                      logicWaterBox,
-  //                                                      "physWaterBox",
-  //                                                      logicWorld, false, 0, true);
+  // G4cout << "H2O is " << H2O << G4endl;
 
   // Array of sensitive detectors
   G4double waterBoxSize=0.8*worldSize;
