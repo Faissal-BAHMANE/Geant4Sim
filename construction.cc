@@ -27,7 +27,7 @@ G4VPhysicalVolume* MyDetectorConstruction::Construct()
 
   // Array of sensitive detectors
   G4double waterBoxSize=0.8*worldSize;
-  G4int numberOfVoxelsPerAxis=2;
+  G4int numberOfVoxelsPerAxis=9;
   G4double voxelSize=waterBoxSize/numberOfVoxelsPerAxis;
 
   G4Box *solidDetector = new G4Box("solidDetector", // name

@@ -1,7 +1,7 @@
 import csv
 import numpy as np
 
-numberOfVoxelsPerAxis = 2
+numberOfVoxelsPerAxis = 9
 water_cube = np.empty(shape=(numberOfVoxelsPerAxis,numberOfVoxelsPerAxis,numberOfVoxelsPerAxis), dtype=np.double)
 
 def coord_from_copyno(copyno, numberOfVoxelsPerAxis):
